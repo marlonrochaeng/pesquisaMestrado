@@ -1,10 +1,8 @@
 1 - gerar populacao de forma aleatoria M - (N. Algoritmos)
-2 - capturar resultado dos algoritmos utilizados (mct, met, olb, etc) p/ nova populacao
-3 - selecionar 50% melhores p/ Criação do modelo prob. (85% dela)
+    2 - capturar resultado dos algoritmos utilizados (mct, met, olb, etc) p/ nova populacao
+3 - selecionar 30-50% melhores p/ Criação do modelo prob. (85% dela)
 4 - modelo probabilistico c/ melhores
     - com % selecionada, montar o modelo p/ gerar novos individuos
-
-
 5 - selecionar % mais diversificados p/ ajudar a formar a nova populacao (15% dela)
     - distancias: euclidiana, similaridade do cosseno, Manhattan (bom p/ muitas dimensones)
                   mahalanobis, etc
