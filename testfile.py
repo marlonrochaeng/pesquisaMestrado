@@ -1,11 +1,10 @@
 import random
 import numpy as np
+from multiprocessing import Pool
+import time
 
-vetor = np.random.randint(1,20,10)
-maiores = sorted(vetor, reverse=True)[0:3]
 
-print("Vetor gerado:",vetor)
-print("3 maiores elementos:", maiores)
+
 
 def select_with_choice(population):
         max = sum([c for c in population])
@@ -40,15 +39,30 @@ def linear_ranking(i):
         
         return np.random.choice([v[0] for v in ordered_values], p=p)
 
-count_maior = 0
-count_menor = 0
 
-for i in range(100):
-    pos = select_with_choice(vetor)
-    if vetor[pos] in maiores:
-        count_maior += 1
-    else:
-        count_menor += 1
+
+if __name__ == '__main__':
+    vetor = np.random.randint(1,1000,100000)
+    maiores = sorted(vetor, reverse=True)[0:3]
+
+    print("Vetor gerado:",vetor)
+    print("3 maiores elementos:", maiores)
+    count_maior = 0
+    count_menor = 0
+    outputs = []
+    start_time = time.time()
+    for i in range(1000):
+        outputs.append(select_with_choice(vetor))
+    print("Out:", outputs)
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+    for i in range(100):
+        with Pool(8) as p:
+            pos = p.map(select_with_choice,vetor)
+            if vetor[pos] in maiores:
+                count_maior += 1
+            else:
+                count_menor += 1
     
-print("Quantidade de vezes que um dos 3 melhores foi selecionado:",count_maior)
-print("Quantidade de vezes que os 3 melhores nao foram selecionados: ",count_menor)
+    print("Quantidade de vezes que um dos 3 melhores foi selecionado:",count_maior)
+    print("Quantidade de vezes que os 3 melhores nao foram selecionados: ",count_menor)
