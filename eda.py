@@ -7,6 +7,8 @@ import os.path as path
 import time
 import numpy.random as npr
 from multiprocessing import Pool
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+
 
 class EDA():
     def __init__(self, jobs, machines, numInd, numGen, ET, toMatrix, elitism, path) -> None:
@@ -105,9 +107,9 @@ class EDA():
         self.gen = self.gen[:int(len(self.gen)*to_matrix_percent)]
         self.prob_matrix = self.create_prob_matrix()
         self.gen_chunk = np.array_split(self.gen, 4)
-        with Pool(4) as p:
+        with ThreadPoolExecutor(8) as p:
             p.map(self.fill_prob_matrix, self.gen_chunk)
-            p.close()
+            
         #self.fill_prob_matrix(self.gen)
 
         for _ in range(self.numInd - qtd_individuals):
@@ -116,8 +118,8 @@ class EDA():
         self.gen = new_gen.copy()
 
         temp = self.order_pop(new_gen)
-        print("Worst individul makespan:")
-        print(temp[-1].fitness)
+        #print("Worst individul makespan:")
+        #print(temp[-1].fitness)
         if self.best_makespan is None:
             self.best_makespan = temp[-1].fitness
         else:
@@ -152,7 +154,7 @@ class EDA():
         self.create_first_gen()
 
         for i in range(self.numGen):
-            print("GEN:",i)
+            #print("GEN:",i)
             self.form_new_gen(self.to_matrix)
         print("--- %s seconds ---" % (time.time() - start_time))
         self.exec_time = (time.time() - start_time)
