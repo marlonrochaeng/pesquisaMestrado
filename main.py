@@ -1,6 +1,6 @@
 import argparse, sys
 from orquestrador import Orquestrador
-import time
+
 
 
 
@@ -11,12 +11,29 @@ parser.add_argument('--machines', help='number of jobs to schedule')
 parser.add_argument('--path', help='path for the jobs instance')
 parser.add_argument('--numInd', help='number of individuals')
 parser.add_argument('--numGen', help='number of generations')
-parser.add_argument('--toMatrix', help='number of generations')
+parser.add_argument('--toMatrix', help='percentual da matriz')
+parser.add_argument('--elitism', help='percentual de individuos que passam de Geração')
 
 
 args=parser.parse_args()
 
-start_time = time.time()
-o = Orquestrador(int(args.jobs), int(args.machines), args.path, int(args.numInd), int(args.numGen), float(args.toMatrix))
-o.run_eda()
-print("--- %s seconds ---" % (time.time() - start_time))
+jobs = [int(i) for i in args.jobs.split(',')]
+machines = [int(i) for i in args.machines.split(',')]
+numInd = [int(i) for i in args.numInd.split(',')]
+numGen = [int(i) for i in args.numGen.split(',')]
+toMatrix = [float(i) for i in args.toMatrix.split(',')]
+path = [i for i in args.path.split(',')]
+elitism = [int(i) for i in args.elitism.split(',')]
+
+
+for j in jobs:
+    for m in machines:
+        for ni in numInd:
+            for ng in numGen:
+                for tm in toMatrix:
+                    for p in path:
+                        for e in elitism:
+
+                            o = Orquestrador(j, m, p, ni, ng, tm, e)
+                            o.run_eda()
+                        

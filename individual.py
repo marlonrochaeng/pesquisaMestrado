@@ -26,11 +26,6 @@ class Individual():
         #print("individual:", self.individual)
 
         for i in range(self.ET.shape[0]):
-            '''print("i:", i)
-            print("self.individual[i]:", self.individual[i])
-            print("maquinas[self.individual[i]]:", maquinas[self.individual[i]])
-            print("self.ET[i][self.individual[i]]:", self.ET[i][self.individual[i]])
-            print("----------")'''
             
             maquinas[self.individual[i]] += self.ET[i][self.individual[i]]
         

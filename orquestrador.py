@@ -5,7 +5,7 @@ from individual import Individual
 from eda import EDA
 
 class Orquestrador():
-    def __init__(self, jobs, machines, path, numInd, numGen, toMatrix) -> None:
+    def __init__(self, jobs, machines, path, numInd, numGen, toMatrix, elitism) -> None:
         self.jobs = jobs
         self.machines = machines
         self.path = path
@@ -13,7 +13,9 @@ class Orquestrador():
         self.numGen = numGen
         self.ET, self.CT, self.maquinas = self.initialize()
         self.to_matrix = toMatrix
-        self.eda = EDA(jobs, machines, numInd, numGen, self.ET, self.to_matrix)
+        self.elitism = elitism
+        self.eda = EDA(jobs, machines, numInd, numGen, self.ET, self.to_matrix, self.elitism, self.path.split('/')[1])
+        
         
 
     def initialize(self) -> tuple:
