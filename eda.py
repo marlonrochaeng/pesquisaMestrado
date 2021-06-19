@@ -68,6 +68,12 @@ class EDA():
             for j in range(len(i.individual)):
                 self.prob_matrix[j][i.individual[j]] += 1
     
+    def fill_single_prob_matrix(self, individual):
+        #print(individual)
+        #input()
+        for j in range(len(individual.individual)):
+            self.prob_matrix[j][individual.individual[j]] += 1
+    
     def create_new_individual(self):
         new_individual = np.random.randint(0, 0, 0)
         count = 0
@@ -107,8 +113,9 @@ class EDA():
         self.gen = self.gen[:int(len(self.gen)*to_matrix_percent)]
         self.prob_matrix = self.create_prob_matrix()
         self.gen_chunk = np.array_split(self.gen, 4)
-        with ThreadPoolExecutor(8) as p:
-            p.map(self.fill_prob_matrix, self.gen_chunk)
+        
+        self.v_func = np.vectorize(self.fill_single_prob_matrix)
+        self.v_func(self.gen)
             
         #self.fill_prob_matrix(self.gen)
 
@@ -118,8 +125,8 @@ class EDA():
         self.gen = new_gen.copy()
 
         temp = self.order_pop(new_gen)
-        #print("Worst individul makespan:")
-        #print(temp[-1].fitness)
+        print("Worst individul makespan:")
+        print(temp[-1].fitness)
         if self.best_makespan is None:
             self.best_makespan = temp[-1].fitness
         else:
@@ -154,7 +161,7 @@ class EDA():
         self.create_first_gen()
 
         for i in range(self.numGen):
-            #print("GEN:",i)
+            print("GEN:",i)
             self.form_new_gen(self.to_matrix)
         print("--- %s seconds ---" % (time.time() - start_time))
         self.exec_time = (time.time() - start_time)
