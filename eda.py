@@ -8,6 +8,7 @@ import time
 import numpy.random as npr
 from multiprocessing import Pool
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from joblib import Parallel, delayed
 
 
 class EDA():
@@ -27,6 +28,8 @@ class EDA():
 
     def select_with_choice(self, population):
         max = sum([c for c in population])
+        print(population)
+        input()
         selection_probs = [c/max for c in population]
         return npr.choice(len(population), p=selection_probs)
     
@@ -67,6 +70,10 @@ class EDA():
         for i in individuals:
             for j in range(len(i.individual)):
                 self.prob_matrix[j][i.individual[j]] += 1
+
+    def fill_prob_matrix_(self, individual):
+        for j in range(len(individual.individual)):
+            self.prob_matrix[j][individual.individual[j]] += 1
     
     def fill_single_prob_matrix(self, individual):
         #print(individual)
@@ -102,6 +109,10 @@ class EDA():
     
     def order_pop(self, arr):
         return sorted(arr, key=lambda x: x.fitness)
+    
+    def paralel_test(self, qtd_individuals):
+        new_gen =Individual(self.ET, self.create_new_individual())
+        return new_gen
 
     def form_new_gen(self, to_matrix_percent):
         
@@ -112,15 +123,15 @@ class EDA():
 
         self.gen = self.gen[:int(len(self.gen)*to_matrix_percent)]
         self.prob_matrix = self.create_prob_matrix()
-        self.gen_chunk = np.array_split(self.gen, 4)
+        #self.gen_chunk = np.array_split(self.gen, 4)
         
-        self.v_func = np.vectorize(self.fill_single_prob_matrix)
-        self.v_func(self.gen)
-            
+        #self.v_func = np.vectorize(self.fill_single_prob_matrix)
+        #self.v_func(self.gen)
+        Parallel(n_jobs=4)(delayed(self.fill_single_prob_matrix)(i) for i in self.gen)    
         #self.fill_prob_matrix(self.gen)
+        time.sleep(3)
 
-        for _ in range(self.numInd - qtd_individuals):
-            new_gen.append(Individual(self.ET, self.create_new_individual()))
+        new_gen += Parallel(n_jobs=4)(delayed(self.paralel_test)(i) for i in range(self.numInd - qtd_individuals))
         
         self.gen = new_gen.copy()
 
