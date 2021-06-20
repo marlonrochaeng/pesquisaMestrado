@@ -6,9 +6,9 @@ resources = 16
 
 u = Utils()
 
-ET, CT, maquinas = u.initialize('u_c_lolo.0', jobs, resources)
+ET, CT, maquinas = u.initialize('512x16/u_c_lolo.0', jobs, resources)
 
 
-res = u.met(ET, CT, maquinas)
+res, individuo = u.met(ET, CT, maquinas)
 res.sort()
 print("Maquinas: ",res)

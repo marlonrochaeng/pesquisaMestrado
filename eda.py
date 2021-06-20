@@ -7,6 +7,7 @@ import os.path as path
 import time
 import numpy.random as npr
 from joblib import Parallel, delayed
+from utils import Utils
 
 
 class EDA():
@@ -97,6 +98,25 @@ class EDA():
     
     def create_first_gen(self):
         self.gen = []
+        
+        u = Utils()
+        ET, CT, maquinas = u.initialize('512x16/'+self.path, self.jobs, self.machines)
+
+        res, individuos = u.maxmin2(ET, CT, maquinas)
+        self.gen.append(Individual(self.ET.copy(), individuos))
+
+        res, individuos = u.minmin(ET, CT, maquinas)
+        self.gen.append(Individual(self.ET.copy(), individuos))
+
+        res, individuos = u.mct2(ET, CT, maquinas)
+        self.gen.append(Individual(self.ET.copy(), individuos))
+
+        res, individuos = u.met(ET, CT, maquinas)
+        self.gen.append(Individual(self.ET.copy(), individuos))
+
+        res, individuos = u.olb(ET, CT, maquinas)
+        self.gen.append(Individual(self.ET.copy(), individuos))
+        
         for _ in range(self.numInd):
             self.gen.append(Individual(self.ET.copy()))
 

@@ -39,9 +39,12 @@ class Utils():
     return np.where(array == array.max())[0][0]
 
   def minmin(self, ET,CT, maquinas):
-
+    individuo = [np.inf for i in range(ET.shape[0])]
+    pos = 0
+    et_copy = ET.copy()
     while ET.shape[0] != 0:
       #print("et_shape", ET.shape)
+      
 
       min_row, min_col = self.get_min_in_matrix(CT)
       '''
@@ -60,51 +63,23 @@ class Utils():
       #print("CT[min_col]",CT[:5,min_col])
 
       #print("maquinas: ",maquinas)
+      for i in range(len(et_copy)):
+        if (ET[min_row] == et_copy[i]).all():
+          pos = i
+          break
 
       ET = np.delete(ET,(min_row),0)
       CT = np.delete(CT,(min_row),0)
+      individuo[pos] = min_col
 
-      #input()
+    return maquinas, individuo
 
-      
-
-    return maquinas
-
-  def maxmin(self, ET,CT, maquinas):
-
-    while ET.shape[0] != 0:
-      #print("et_shape", ET.shape)
-
-      min_row, min_col = self.get_max_in_matrix(CT)
-      '''
-      print("min_row: ", min_row)
-      print("min_col: ", min_col)
-      print("menor elemento:", CT[min_row][min_col])
-      print("CT[min_col]",CT[:5,min_col])
-      print("------------------------\n")
-      '''
-
-      min_col = self.get_min_in_array(CT[min_row])
-
-      maquinas[min_col] += ET[min_row][min_col]
-
-      for i in range(ET.shape[0]):
-        CT[i][min_col] += ET[min_row][min_col]#maquinas[min_col]
-      
-      #print("CT[min_col]",CT[:5,min_col])
-
-      #print("maquinas: ",maquinas)
-
-      ET = np.delete(ET,(min_row),0)
-      CT = np.delete(CT,(min_row),0)
-
-      #input()
-
-
-    return maquinas
-
+  
 
   def maxmin2(self, ET,CT, maquinas):
+    individuo = [np.inf for i in range(ET.shape[0])]
+    pos = 0
+    et_copy = ET.copy()
     while ET.shape[0] != 0:
       mins = []
       for i in range(ET.shape[0]):
@@ -121,50 +96,31 @@ class Utils():
       for i in range(ET.shape[0]):
         CT[i][max_of_mins[1]] += ET[max_of_mins[0]][min_exec]
 
+      for i in range(len(et_copy)):
+        if (ET[max_of_mins[0]] == et_copy[i]).all():
+          pos = i
+          #print("Ind:", individuo)
+          #print("Pos:", pos)
+          #print("Maq:", min_exec)
+          #input()
+          break
+      
+      
+        
+
+      individuo[pos] = min_exec
+
       ET = np.delete(ET,(max_of_mins[0]),0)
       CT = np.delete(CT,(max_of_mins[0]),0)
 
-    return maquinas
+    return maquinas, individuo
 
-  def mct(self, ET,CT, maquinas):
 
-    while ET.shape[0] != 0:  
-      mins = []
-      for i in range(ET.shape[0]):
-        mins.append((i, self.get_min_in_array(ET[i]),ET[i][self.get_min_in_array(ET[i])]))
-        #print(CT[i][self.get_min_in_array(CT[i])])
-        #input()
-        #print("mins:", mins)
-
-        #print("len:", i)
-        #print("min of mins", min(mins, key=lambda item:item[2]))
-        #input()
-
-      min_of_mins = min(mins, key=lambda item:item[2])
-
-      temp = maquinas.copy()
-
-      for i in range(len(temp)):
-        temp[i] += ET[min_of_mins[0]][i]
-      
-      menor = self.get_min_in_array(temp)
-      
-      #print("maquinas:", maquinas)
-
-      #mins.pop(min_of_mins[0])
-      maquinas[menor] += ET[min_of_mins[0]][menor]
-      #for i in range(ET.shape[0]):
-      #  CT[i][menor] += ET[min_of_mins[0]][menor]
-
-      ET = np.delete(ET,(min_of_mins[0]),0)
-      #CT = np.delete(CT,(min_of_mins[0]),0)
-        
-        #mins.pop(min_of_mins[0])
-
-    return maquinas
-
-  def mct(self, ET,CT, maquinas):
-
+  def mct2(self, ET,CT, maquinas):
+    #o correto
+    individuo = [np.inf for i in range(ET.shape[0])]
+    pos = 0
+    
     while ET.shape[0] != 0:  
       temp = maquinas.copy()
 
@@ -174,12 +130,17 @@ class Utils():
       menor = self.get_min_in_array(temp)
 
       maquinas[menor] += ET[0][menor]
+      individuo[pos] = menor
+      pos += 1
 
       ET = np.delete(ET,(0),0)
+    
 
-    return maquinas
+    return maquinas, individuo
 
   def met(self, ET,CT, maquinas):
+    individuo = [np.inf for i in range(ET.shape[0])]
+    pos = 0
 
     while ET.shape[0] != 0:  
 
@@ -188,10 +149,14 @@ class Utils():
       maquinas[menor] += ET[0][menor]
 
       ET = np.delete(ET,(0),0)
+      individuo[pos] = menor
+      pos += 1
 
-    return maquinas
+    return maquinas, individuo
 
   def olb(self, ET,CT, maquinas):
+    individuo = [np.inf for i in range(ET.shape[0])]
+    pos = 0
 
     while ET.shape[0] != 0:  
       temp = maquinas.copy()
@@ -202,10 +167,12 @@ class Utils():
       menor = self.get_min_in_array(temp)
 
       maquinas[menor] += ET[0][menor]
+      individuo[pos] = menor
+      pos += 1
 
       ET = np.delete(ET,(0),0)
 
-    return maquinas
+    return maquinas, individuo
 
   def sufferage(self, ET,CT, maquinas):
     ets = []
