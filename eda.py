@@ -6,6 +6,8 @@ import pandas as pd
 import os.path as path
 import time
 import numpy.random as npr
+from joblib import Parallel, delayed
+
 
 class EDA():
     def __init__(self, jobs, machines, numInd, numGen, ET, toMatrix, elitism, path) -> None:
@@ -65,6 +67,14 @@ class EDA():
             for j in range(len(i.individual)):
                 self.prob_matrix[j][i.individual[j]] += 1
     
+    def fill_single_prob_matrix(self, individual):
+        for j in range(len(individual.individual)):
+            self.prob_matrix[j][individual.individual[j]] += 1
+    
+    def paralel_gen(self, qtd_individuals):
+        new_gen =Individual(self.ET, self.create_new_individual())
+        return new_gen
+    
     def create_new_individual(self):
         new_individual = np.random.randint(0, 0, 0)
         count = 0
@@ -103,10 +113,11 @@ class EDA():
 
         self.gen = self.gen[:int(len(self.gen)*to_matrix_percent)]
         self.prob_matrix = self.create_prob_matrix()
-        self.fill_prob_matrix(self.gen)
+        #self.fill_prob_matrix(self.gen)
+        self.v_func = np.vectorize(self.fill_single_prob_matrix)
+        self.v_func(self.gen)
 
-        for _ in range(self.numInd - qtd_individuals):
-            new_gen.append(Individual(self.ET, self.create_new_individual()))
+        new_gen += Parallel(n_jobs=4)(delayed(self.paralel_gen)(i) for i in range(self.numInd - qtd_individuals))
         
         self.gen = new_gen.copy()
 
