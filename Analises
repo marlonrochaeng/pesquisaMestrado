@@ -1,0 +1,50 @@
+Instância | Algoritmo              | melhor resultado
+u_c_hihi  | Minmin                 |    8460674
+u_c_hihi  | Sufferage              |   10249174
+u_c_hihi  | pu-CHC                 |    7381570
+u_c_hihi  | EDA puro               |   10477003
+u_c_hihi  | Todas Heurísticas      |    8051834
+u_c_hihi  | EDA+MCT                |   10918154
+u_c_hihi  | EDA+MET                |   13381024
+u_c_hihi  | EDA+OLB                |   13333484
+u_c_hihi  | EDA+MINMIN             |    8117967
+u_c_hihi  | EDA+MAXMIN             |   11553771
+
+
+Instância | Algoritmo              | melhor resultado
+u_c_hilo  | Minmin                 |    161805
+u_c_hilo  | Sufferage              |    168982
+u_c_hilo  | pu-CHC                 |    153105
+u_c_hilo  | EDA puro               |    240264
+u_c_hilo  | Todas Heurísticas      |    159597
+u_c_hilo  | EDA+MCT                |    182837
+u_c_hilo  | EDA+MET                |    198738
+u_c_hilo  | EDA+OLB                |    205239
+u_c_hilo  | EDA+MINMIN             |    158460
+u_c_hilo  | EDA+MAXMIN             |    203975
+
+
+Instância | Algoritmo              | melhor resultado
+u_c_lohi  | Minmin                 |   275837
+u_c_lohi  | Sufferage              |   337121
+u_c_lohi  | pu-CHC                 |   239260
+u_c_lohi  | EDA puro               |   355173
+u_c_lohi  | Todas Heurísticas      |   264737
+u_c_lohi  | EDA+MCT                |   351362
+u_c_lohi  | EDA+MET                |   421113
+u_c_lohi  | EDA+OLB                |   463474
+u_c_lohi  | EDA+MINMIN             |   267658
+u_c_lohi  | EDA+MAXMIN             |   367131
+
+
+Instância | Algoritmo              | melhor resultado
+u_c_lolo  | Minmin                 |   5441
+u_c_lolo  | Sufferage              |   5658
+u_c_lolo  | pu-CHC                 |   5147
+u_c_lolo  | EDA puro               |   8041
+u_c_lolo  | Todas Heurísticas      |   5339
+u_c_lolo  | EDA+MCT                |   6074
+u_c_lolo  | EDA+MET                |   6579
+u_c_lolo  | EDA+OLB                |   6562
+u_c_lolo  | EDA+MINMIN             |   5339
+u_c_lolo  | EDA+MAXMIN             |   7307

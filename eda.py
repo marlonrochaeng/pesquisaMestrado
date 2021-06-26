@@ -103,16 +103,16 @@ class EDA():
         ET, CT, maquinas = u.initialize('512x16/'+self.path, self.jobs, self.machines)
 
         res, individuos = u.maxmin2(ET, CT, maquinas)
-        self.gen.append(Individual(self.ET.copy(), individuos))
+        #self.gen.append(Individual(self.ET.copy(), individuos))
 
         res, individuos = u.minmin(ET, CT, maquinas)
-        self.gen.append(Individual(self.ET.copy(), individuos))
+        #self.gen.append(Individual(self.ET.copy(), individuos))
 
         res, individuos = u.mct2(ET, CT, maquinas)
-        self.gen.append(Individual(self.ET.copy(), individuos))
+        #self.gen.append(Individual(self.ET.copy(), individuos))
 
         res, individuos = u.met(ET, CT, maquinas)
-        self.gen.append(Individual(self.ET.copy(), individuos))
+        #self.gen.append(Individual(self.ET.copy(), individuos))
 
         res, individuos = u.olb(ET, CT, maquinas)
         self.gen.append(Individual(self.ET.copy(), individuos))
@@ -151,8 +151,8 @@ class EDA():
 
     def save_to_csv(self):
 
-        if path.exists('results.csv'):
-            df_results = pd.read_csv('results.csv', header=0, index_col=0)
+        if path.exists('results_only_olb.csv'):
+            df_results = pd.read_csv('results_only_olb.csv', header=0, index_col=0)
         else:
             columns = ['jobs','machines','numInd','numGen','makespan', 'to_matrix_percentage']
             df_results = pd.DataFrame(columns=columns)
@@ -169,7 +169,7 @@ class EDA():
              'elitismo': self.elitism,
              'instance': self.path}, 
                         ignore_index=True)   
-        df_results.to_csv('results.csv')     
+        df_results.to_csv('results_only_olb.csv')     
         df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
         
     
