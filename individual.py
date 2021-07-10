@@ -3,12 +3,13 @@ import numpy as np
 
 
 class Individual():
-    def __init__(self, ET, individual=None) -> None:
+    def __init__(self, ET, individual=None, heuristic=None) -> None:
         self.individual = individual 
         if self.individual is None:
             self.individual = self.generate_random_individual(ET)
         self.ET = ET
         self.fitness = self.get_fitness()
+        self.heuristic = heuristic
 
     def generate_random_individual(self, ET):
         return np.random.randint(0, ET.shape[1], ET.shape[0])

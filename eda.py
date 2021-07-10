@@ -103,22 +103,24 @@ class EDA():
         ET, CT, maquinas = u.initialize('512x16/'+self.path, self.jobs, self.machines)
 
         res, individuos = u.maxmin2(ET, CT, maquinas)
-        self.gen.append(Individual(self.ET.copy(), individuos))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'maxmin'))
 
         res, individuos = u.minmin(ET, CT, maquinas)
-        self.gen.append(Individual(self.ET.copy(), individuos))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'minmin'))
 
         res, individuos = u.mct2(ET, CT, maquinas)
-        self.gen.append(Individual(self.ET.copy(), individuos))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'mct'))
 
         res, individuos = u.met(ET, CT, maquinas)
-        self.gen.append(Individual(self.ET.copy(), individuos))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'met'))
 
         res, individuos = u.olb(ET, CT, maquinas)
-        self.gen.append(Individual(self.ET.copy(), individuos))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'olb'))
         
         for _ in range(self.numInd):
             self.gen.append(Individual(self.ET.copy()))
+        
+        self.first_gen_len = len(self.gen)
 
     
     def order_pop(self, arr):
@@ -142,6 +144,12 @@ class EDA():
         self.gen = new_gen.copy()
 
         temp = self.order_pop(new_gen)
+        print("---------------------")
+        print("Heuristica que permaneceu nessa geração:")
+        for i in temp:
+            if i.heuristic is not None:
+                print(i.heuristic)
+        print("---------------------")
         print("Worst individul makespan:")
         print(temp[-1].fitness)
         if self.best_makespan is None:
@@ -183,7 +191,7 @@ class EDA():
         print("--- %s seconds ---" % (time.time() - start_time))
         self.exec_time = (time.time() - start_time)
         
-        self.save_to_csv()
+        #self.save_to_csv()
         
         
   

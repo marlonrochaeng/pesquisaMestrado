@@ -1,0 +1,85 @@
+u_c_lolo
+    MET saiu na 1 geração
+    OLB         7
+    MAXMIN      19
+    MCT         35
+    MINMIN      73
+
+u_c_lohi
+    MET saiu na 2 geração
+    OLB         6
+    MAXMIN      17
+    MCT         19
+    MINMIN      44
+
+u_c_hilo
+    MET saiu na 1 geração
+    OLB         6
+    MAXMIN      23
+    MCT         31
+    MINMIN      73
+
+u_c_hihi
+    MET saiu na 1 geração
+    OLB         5
+    MAXMIN      18
+    MCT         18
+    MINMIN      43
+===================================================
+u_i_lolo
+    MET saiu na  19 geração
+    OLB           2
+    MAXMIN       10
+    MCT          20
+    MINMIN       40
+
+u_i_lohi
+    MET saiu na  16 geração
+    OLB           2
+    MAXMIN       12
+    MCT          18
+    MINMIN       25
+
+u_i_hilo
+    MET saiu na  21 geração
+    OLB           2
+    MAXMIN        9
+    MCT          21
+    MINMIN       46
+
+u_i_hihi
+    MET saiu na  19 geração
+    OLB           2
+    MAXMIN       11
+    MCT          19
+    MINMIN       33
+
+===================================================
+
+u_s_lolo
+    MET saiu na   1 geração
+    OLB           2
+    MAXMIN       12
+    MCT          26
+    MINMIN       52
+
+u_s_lohi
+    MET saiu na   4 geração
+    OLB           3
+    MAXMIN       13
+    MCT          21
+    MINMIN       36
+
+u_s_hilo
+    MET saiu na   1 geração
+    OLB           2
+    MAXMIN       12
+    MCT          25
+    MINMIN       46
+
+u_s_hihi
+    MET saiu na   2 geração
+    OLB           2
+    MAXMIN       14
+    MCT          21
+    MINMIN       35
