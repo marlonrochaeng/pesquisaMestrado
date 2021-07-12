@@ -8,10 +8,11 @@ import time
 import numpy.random as npr
 from joblib import Parallel, delayed
 from utils import Utils
+import json
 
 
 class EDA():
-    def __init__(self, jobs, machines, numInd, numGen, ET, toMatrix, elitism, path) -> None:
+    def __init__(self, jobs, machines, numInd, numGen, ET, toMatrix, elitism, path, mutation) -> None:
         self.jobs = jobs
         self.machines = machines
         self.numInd = numInd
@@ -24,6 +25,7 @@ class EDA():
         self.elitism = elitism
         self.selection_method = 'roulette wheel'
         self.path = path
+        self.mutation = mutation
 
     def select_with_choice(self, population):
         max = sum([c for c in population])
@@ -117,16 +119,38 @@ class EDA():
         res, individuos = u.olb(ET, CT, maquinas)
         self.gen.append(Individual(self.ET.copy(), individuos, 'olb'))
         
-        for _ in range(self.numInd):
-            self.gen.append(Individual(self.ET.copy()))
+        #for _ in range(self.numInd):
+        #    self.gen.append(Individual(self.ET.copy()))
+
+        #self.save_to_json(100)
+
+        pop = json.load(open('population_100.json'))
+
+        for i in range(len(pop)):
+            self.gen.append(Individual(self.ET.copy(), pop[str(i)]))
         
         self.first_gen_len = len(self.gen)
+    
+    def save_to_json(self, num):
+        
+        pop = {}
+        count = 0
 
+        for i in self.gen:
+            pop[count] = []
+            for j in i.individual:
+                pop[count].append(int(j))
+            count += 1
+        
+        with open(f"population_{num}.json", "w") as outfile: 
+            json.dump(pop, outfile)
+        
     
     def order_pop(self, arr):
         return sorted(arr, key=lambda x: x.fitness)
 
     def form_new_gen(self, to_matrix_percent):
+        self.mutate_swap()
         
         self.gen = self.order_pop(self.gen)
 
@@ -159,8 +183,8 @@ class EDA():
 
     def save_to_csv(self):
 
-        if path.exists('results_u_s_todas_heurísticas.csv'):
-            df_results = pd.read_csv('results_u_s_todas_heurísticas.csv', header=0, index_col=0)
+        if path.exists('eda_mutacao_swap.csv'):
+            df_results = pd.read_csv('eda_mutacao_swap.csv', header=0, index_col=0)
         else:
             columns = ['jobs','machines','numInd','numGen','makespan', 'to_matrix_percentage']
             df_results = pd.DataFrame(columns=columns)
@@ -175,11 +199,32 @@ class EDA():
              'exec_time': self.exec_time,
              'selection_method': self.selection_method,
              'elitismo': self.elitism,
-             'instance': self.path}, 
+             'instance': self.path,
+             'mutation':self.mutation}, 
                         ignore_index=True)   
-        df_results.to_csv('results_u_s_todas_heurísticas.csv')     
+        df_results.to_csv('eda_mutacao_swap.csv')     
         df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
-        
+
+    def mutate(self):
+        for i in self.gen:
+            p = random.randint(1,100)
+            if p <= self.mutation and i.heuristic is None:
+                pos = random.randint(0,len(self.gen[0].individual)-1)
+                i.individual[pos] = random.randint(0, self.machines - 1)
+                i.fitness = i.get_fitness() 
+
+    def mutate_swap(self):
+        for i in self.gen:
+            p = random.randint(1,100)
+            if p <= self.mutation and i.heuristic is None:
+                pos1 = random.randint(0,len(self.gen[0].individual)-1)
+                pos2 = random.randint(0,len(self.gen[0].individual)-1)
+
+                while pos1 == pos2 or i.individual[pos1] == i.individual[pos2] :
+                    pos2 = random.randint(0,len(self.gen[0].individual)-1)
+
+                i.individual[pos1], i.individual[pos2] = i.individual[pos2], i.individual[pos1]
+                i.fitness = i.get_fitness()
     
     def eda_generations(self):
         start_time = time.time()
@@ -191,7 +236,7 @@ class EDA():
         print("--- %s seconds ---" % (time.time() - start_time))
         self.exec_time = (time.time() - start_time)
         
-        #self.save_to_csv()
+        self.save_to_csv()
         
         
   

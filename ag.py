@@ -9,9 +9,8 @@ import random
 
 class GA(EDA):
     def __init__(self, jobs, machines, numInd, numGen, ET, toMatrix, elitism, path, mutation) -> None:
-        super().__init__(jobs, machines, numInd, numGen, ET, toMatrix, elitism, path)
+        super().__init__(jobs, machines, numInd, numGen, ET, toMatrix, elitism, path, mutation)
         self.mutation = mutation
-
     
     def form_new_gen(self):
         
@@ -24,12 +23,7 @@ class GA(EDA):
 
         self.gen += new_gen
 
-        for i in self.gen:
-            p = random.randint(1,100)
-            if p <= self.mutation and i.heuristic is None:
-                pos = random.randint(0,len(self.gen[0].individual)-1)
-                i.individual[pos] = random.randint(0, self.machines - 1)
-                i.fitness = i.get_fitness()
+        self.mutate_swap()
 
         self.gen = self.order_pop(self.gen)[:self.first_gen_len]
 
@@ -93,8 +87,8 @@ class GA(EDA):
 
     def save_to_csv(self):
 
-        if path.exists('AG.csv'):
-            df_results = pd.read_csv('AG.csv', header=0, index_col=0)
+        if path.exists('ag_mutacao_swap.csv'):
+            df_results = pd.read_csv('ag_mutacao_swap.csv', header=0, index_col=0)
         else:
             columns = ['jobs','machines','numInd','numGen','makespan', 'to_matrix_percentage']
             df_results = pd.DataFrame(columns=columns)
@@ -112,7 +106,7 @@ class GA(EDA):
              'instance': self.path,
              'mutation':self.mutation}, 
                         ignore_index=True)   
-        df_results.to_csv('AG.csv')     
+        df_results.to_csv('ag_mutacao_swap.csv')     
         df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
 
     def ag_generations(self):
