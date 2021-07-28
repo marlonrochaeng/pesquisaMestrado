@@ -150,7 +150,7 @@ class EDA():
         return sorted(arr, key=lambda x: x.fitness)
 
     def form_new_gen(self, to_matrix_percent):
-        self.mutate_swap()
+        #self.mutate_swap()
         
         self.gen = self.order_pop(self.gen)
 
@@ -183,8 +183,8 @@ class EDA():
 
     def save_to_csv(self):
 
-        if path.exists('eda_mutacao_swap.csv'):
-            df_results = pd.read_csv('eda_mutacao_swap.csv', header=0, index_col=0)
+        if path.exists('eda_sem_mutacao.csv'):
+            df_results = pd.read_csv('eda_sem_mutacao.csv', header=0, index_col=0)
         else:
             columns = ['jobs','machines','numInd','numGen','makespan', 'to_matrix_percentage']
             df_results = pd.DataFrame(columns=columns)
@@ -202,7 +202,7 @@ class EDA():
              'instance': self.path,
              'mutation':self.mutation}, 
                         ignore_index=True)   
-        df_results.to_csv('eda_mutacao_swap.csv')     
+        df_results.to_csv('eda_sem_mutacao.csv')     
         df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
 
     def mutate(self):
