@@ -126,6 +126,15 @@ class EDA():
 
         pop = json.load(open('population_100.json'))
 
+        #população gerada por força bruta
+        _path = self.path.split('.')[0]
+        u_c_pop = json.load(open(f'population_map-{_path}.txt.json'))
+        print(f"--------population_map-{_path}.txt.json---------")
+
+        for i in range(len(u_c_pop)):
+            self.gen.append(Individual(self.ET.copy(), u_c_pop[str(i)]))
+
+        #população gerada atraves da populacao controle
         for i in range(len(pop)):
             self.gen.append(Individual(self.ET.copy(), pop[str(i)]))
         
@@ -164,8 +173,10 @@ class EDA():
         self.v_func(self.gen)
 
         new_gen += Parallel(n_jobs=4)(delayed(self.paralel_gen)(i) for i in range(self.numInd - qtd_individuals))
-        
+        print("New ind:",self.numInd - qtd_individuals)
+        print("Num ind:",self.numInd)
         self.gen = new_gen.copy()
+        print("Num ind:",len(self.gen))
 
         temp = self.order_pop(new_gen)
         print("---------------------")
@@ -183,8 +194,8 @@ class EDA():
 
     def save_to_csv(self):
 
-        if path.exists('eda_sem_mutacao.csv'):
-            df_results = pd.read_csv('eda_sem_mutacao.csv', header=0, index_col=0)
+        if path.exists('eda_uc_hihi.csv'):
+            df_results = pd.read_csv('eda_uc_hihi.csv', header=0, index_col=0)
         else:
             columns = ['jobs','machines','numInd','numGen','makespan', 'to_matrix_percentage']
             df_results = pd.DataFrame(columns=columns)
@@ -202,7 +213,7 @@ class EDA():
              'instance': self.path,
              'mutation':self.mutation}, 
                         ignore_index=True)   
-        df_results.to_csv('eda_sem_mutacao.csv')     
+        df_results.to_csv('eda_uc_hihi.csv')     
         df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
 
     def mutate(self):

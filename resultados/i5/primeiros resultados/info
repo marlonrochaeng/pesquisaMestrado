@@ -1,0 +1,14 @@
+AG_1_versao_cross_mutacao_simples: 
+    AG + crossover de 1 ponto + mutacao simples de 1 ponto
+
+eda_pure_results_no_elitism:    
+    EDA sem heuristicas e sem elitismo
+
+results_eda_heuristic_and_elitism
+    EDA com heuristicas e com elitismo
+
+results_u_i_todas_heurísticas/results_u_s_todas_heurísticas
+    EDA com heuristicas e com elitismo p/ outras instancias
+
+demais:
+    apenas 1 heuristica
