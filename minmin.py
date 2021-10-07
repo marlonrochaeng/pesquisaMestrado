@@ -9,6 +9,4 @@ u = Utils()
 ET, CT, maquinas = u.initialize('512x16/u_c_lolo.0', jobs, resources)
 
 
-res = u.minmin(ET, CT, maquinas)
-res.sort()
-print("Maquinas: ",res)
+m, i = u.minmin(ET, CT, maquinas)
