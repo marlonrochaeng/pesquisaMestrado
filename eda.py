@@ -9,6 +9,7 @@ import numpy.random as npr
 from joblib import Parallel, delayed
 from utils import Utils
 import json
+import copy
 
 
 class EDA():
@@ -127,13 +128,14 @@ class EDA():
         pop = json.load(open('population_100.json'))
 
         #população gerada por força bruta
+        
         _path = self.path.split('.')[0]
         u_c_pop = json.load(open(f'population_map-{_path}.txt.json'))
         print(f"--------population_map-{_path}.txt.json---------")
 
         for i in range(len(u_c_pop)):
             self.gen.append(Individual(self.ET.copy(), u_c_pop[str(i)]))
-
+        
         #população gerada atraves da populacao controle
         for i in range(len(pop)):
             self.gen.append(Individual(self.ET.copy(), pop[str(i)]))
@@ -159,7 +161,8 @@ class EDA():
         return sorted(arr, key=lambda x: x.fitness)
 
     def form_new_gen(self, to_matrix_percent):
-        #self.mutate_swap()
+        self.mutate()
+        self.vs_local_search()
         
         self.gen = self.order_pop(self.gen)
 
@@ -194,8 +197,8 @@ class EDA():
 
     def save_to_csv(self):
 
-        if path.exists('eda_uc_hihi.csv'):
-            df_results = pd.read_csv('eda_uc_hihi.csv', header=0, index_col=0)
+        if path.exists('vs_local_search_and_mutation.csv'):
+            df_results = pd.read_csv('vs_local_search_and_mutation.csv', header=0, index_col=0)
         else:
             columns = ['jobs','machines','numInd','numGen','makespan', 'to_matrix_percentage']
             df_results = pd.DataFrame(columns=columns)
@@ -213,8 +216,15 @@ class EDA():
              'instance': self.path,
              'mutation':self.mutation}, 
                         ignore_index=True)   
-        df_results.to_csv('eda_uc_hihi.csv')     
+        df_results.to_csv('vs_local_search_and_mutation.csv')     
         df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
+    
+    def vs_local_search(self):
+        for g in self.gen:
+            g_cp = copy.deepcopy(g)
+            g_cp.local_search_for_vs()
+            if g_cp.fitness < g.fitness:
+                g = g_cp
 
     def mutate(self):
         for i in self.gen:

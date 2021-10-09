@@ -1,0 +1,3 @@
+,jobs,machines,numInd,numGen,makespan,to_matrix_percentage,elitismo,exec_time,instance,mutation,selection_method
+0,512,16,100,100,161498.14221400005,0.3,10.0,53.225499629974365,u_c_hilo.0,0.0,roulette wheel
+1,512,16,100,100,200635.94064400002,0.3,20.0,63.717921018600464,u_c_hilo.0,0.0,roulette wheel
