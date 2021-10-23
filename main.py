@@ -1,7 +1,7 @@
 import argparse, sys
 from orquestrador import Orquestrador
-
-
+import os
+import time
 
 
 parser=argparse.ArgumentParser()
@@ -40,4 +40,6 @@ for j in jobs:
 
                                 o = Orquestrador(j, m, p, ni, ng, tm, e, mu)
                                 o.run_eda()
-                        
+
+time.sleep(1)                       
+os.system("shutdown -a now")

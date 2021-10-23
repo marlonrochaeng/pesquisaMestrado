@@ -5,6 +5,7 @@ import numpy as np
 import time
 import multiprocessing
 import requests
+from libsvm.commonutil import evaluations
 
 def generate_prediction(svm):
     pred = []
@@ -26,6 +27,6 @@ svm = LibSVM_info(ET, i)
 svc = svm.train()
 p_labels, p_acc, p_vals = svm.get_label(i, svc,ET)
 
-print(p_vals[0])
+#print(p_vals[0])
 
 

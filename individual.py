@@ -68,7 +68,7 @@ class Individual():
         #print(f"most_loaded_machine: {most_loaded_machine}, random_task: {random_task}, random_machine: {random_machine}")
 
         self.fitness = self.get_fitness()
-        
+       
 
 
 '''
