@@ -106,19 +106,19 @@ class EDA():
         ET, CT, maquinas = u.initialize('512x16/'+self.path, self.jobs, self.machines)
 
         res, individuos = u.maxmin2(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'maxmin'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'maxmin'))
 
         res, individuos = u.minmin(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'minmin'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'minmin'))
 
         res, individuos = u.mct2(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'mct'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'mct'))
 
         res, individuos = u.met(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'met'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'met'))
 
         res, individuos = u.olb(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'olb'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'olb'))
         
         #for _ in range(self.numInd):
         #    self.gen.append(Individual(self.ET.copy()))
@@ -197,8 +197,8 @@ class EDA():
 
     def save_to_csv(self):
 
-        if path.exists('resultados/EDA_SEM_POP_GRANDE_E_SEM_HEURISITCA.csv'):
-            df_results = pd.read_csv('resultados/EDA_SEM_POP_GRANDE_E_SEM_HEURISITCA.csv', header=0, index_col=0)
+        if path.exists('resultados/EDA_SEM_POP_GRANDE_E_COM_HEURISITCA.csv'):
+            df_results = pd.read_csv('resultados/EDA_SEM_POP_GRANDE_E_COM_HEURISITCA.csv', header=0, index_col=0)
         else:
             columns = ['jobs','machines','numInd','numGen','makespan', 'to_matrix_percentage']
             df_results = pd.DataFrame(columns=columns)
@@ -216,7 +216,7 @@ class EDA():
              'instance': self.path,
              'mutation':self.mutation}, 
                         ignore_index=True)   
-        df_results.to_csv('resultados/EDA_SEM_POP_GRANDE_E_SEM_HEURISITCA.csv')     
+        df_results.to_csv('resultados/EDA_SEM_POP_GRANDE_E_COM_HEURISITCA.csv')     
         df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
     
     def vs_local_search(self):
