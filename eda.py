@@ -10,6 +10,7 @@ from joblib import Parallel, delayed
 from utils import Utils
 import json
 import copy
+import uuid
 
 
 class EDA():
@@ -27,6 +28,8 @@ class EDA():
         self.selection_method = 'roulette wheel'
         self.path = path
         self.mutation = mutation
+        self.i = None
+        self.vns_analysis = []
 
     def select_with_choice(self, population):
         max = sum([c for c in population])
@@ -133,8 +136,8 @@ class EDA():
         u_c_pop = json.load(open(f'population_map-{_path}.txt.json'))
         print(f"--------population_map-{_path}.txt.json---------")
 
-        #for i in range(len(u_c_pop)):
-        #    self.gen.append(Individual(self.ET.copy(), u_c_pop[str(i)]))
+        for i in range(len(u_c_pop)):
+            self.gen.append(Individual(self.ET.copy(), u_c_pop[str(i)]))
         
         #população gerada atraves da populacao controle
         for i in range(len(pop)):
@@ -176,29 +179,40 @@ class EDA():
         self.v_func(self.gen)
 
         new_gen += Parallel(n_jobs=8)(delayed(self.paralel_gen)(i) for i in range(self.numInd - qtd_individuals))
-        print("New ind:",self.numInd - qtd_individuals)
-        print("Num ind:",self.numInd)
+        #print("New ind:",self.numInd - qtd_individuals)
+        #print("Num ind:",self.numInd)
         self.gen = new_gen.copy()
-        print("Num ind:",len(self.gen))
+        #print("Num ind:",len(self.gen))
 
-        temp = self.order_pop(new_gen)
+        temp = self.order_pop(new_gen).copy()
+        self.gen = temp.copy()
+        #print("---------------------")
+        #print("Heuristica que permaneceu nessa geração:")
+        #for i in temp:
+        #    if i.heuristic is not None:
+        #        print(i.heuristic)
         print("---------------------")
-        print("Heuristica que permaneceu nessa geração:")
-        for i in temp:
-            if i.heuristic is not None:
-                print(i.heuristic)
-        print("---------------------")
-        print("Worst individul makespan:")
+        print("Worst individul makespan before vns:")
         print(temp[-1].fitness)
+        teste = temp[-1].fitness
+
+        if self.i == 99 or self.i == 199:
+            self.gen[-1].individual, self.gen[-1].fitness = self.variable_neighborhood_search(self.ET, self.gen[-1].individual)
+            print("Worst individul makespan after vns:")
+            print(self.gen[-1].fitness)
+            self.save_analysis_to_csv(teste)
+
         if self.best_makespan is None:
-            self.best_makespan = temp[-1].fitness
+            self.best_makespan = self.gen[-1].fitness
         else:
-            self.best_makespan = temp[-1].fitness if temp[-1].fitness < self.best_makespan else self.best_makespan
+            self.best_makespan = self.gen[-1].fitness if self.gen[-1].fitness < self.best_makespan else self.best_makespan
+        
+        
 
     def save_to_csv(self):
 
-        if path.exists('resultados/EDA_SEM_POP_GRANDE_E_COM_HEURISITCA.csv'):
-            df_results = pd.read_csv('resultados/EDA_SEM_POP_GRANDE_E_COM_HEURISITCA.csv', header=0, index_col=0)
+        if path.exists('resultados/COM_VNS.csv'):
+            df_results = pd.read_csv('resultados/COM_VNS.csv', header=0, index_col=0)
         else:
             columns = ['jobs','machines','numInd','numGen','makespan', 'to_matrix_percentage']
             df_results = pd.DataFrame(columns=columns)
@@ -216,7 +230,25 @@ class EDA():
              'instance': self.path,
              'mutation':self.mutation}, 
                         ignore_index=True)   
-        df_results.to_csv('resultados/EDA_SEM_POP_GRANDE_E_COM_HEURISITCA.csv')     
+        df_results.to_csv('resultados/COM_VNS.csv')     
+        df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
+
+    def save_analysis_to_csv(self, teste):
+
+        if path.exists('resultados/vns_analysis.csv'):
+            df_results = pd.read_csv('resultados/vns_analysis.csv', header=0, index_col=0)
+        else:
+            columns = ['instance','worst_makespan_before_vns','worst_makespan_after_vns','improvement']
+            df_results = pd.DataFrame(columns=columns)
+
+        df_results = df_results.append(
+            {'instance': self.path.split('.')[0],
+             'worst_makespan_before_vns': teste,
+             'worst_makespan_after_vns': self.gen[-1].fitness,
+             'improvement': (1 - self.gen[-1].fitness/teste)*100}, 
+                        ignore_index=True) 
+
+        df_results.to_csv('resultados/vns_analysis.csv')     
         df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
     
     def vs_local_search(self):
@@ -232,7 +264,69 @@ class EDA():
             if p <= self.mutation and i.heuristic is None:
                 pos = random.randint(0,len(self.gen[0].individual)-1)
                 i.individual[pos] = random.randint(0, self.machines - 1)
-                i.fitness = i.get_fitness() 
+                i.fitness = i.get_fitness()
+
+    def get_fitness(self, ET, individual):
+        maquinas = np.zeros(ET.shape[1])
+        
+        for i in range(ET.shape[0]):
+            maquinas[individual[i]] += ET[i][individual[i]]
+
+        return maquinas[self.get_max_in_array(maquinas)]
+
+    def get_max_in_array(self, array):
+        '''
+        Esta função a posição do menor elemento do array passado por parametro
+        '''
+        return np.where(array == array.max())[0][0]
+
+    def stochastic_2_opt(self, ET, city_tour):
+        best_route = copy.deepcopy(city_tour)      
+        i, j  = random.sample(range(0, len(city_tour)-1), 2)          
+        best_route[i], best_route[j]  = best_route[j], best_route[i]           
+        makespan = self.get_fitness(ET, best_route)                   
+        return best_route, makespan
+    
+# Function: Local Search
+    def local_search(self, ET, city_tour, max_attempts = 50, neighbourhood_size = 5):
+        count = 0
+        solution = copy.deepcopy(city_tour)
+        sol_makespan = self.get_fitness(ET,solution)
+        while (count < max_attempts): 
+            for i in range(0, neighbourhood_size):
+                candidate, cand_makespan = self.stochastic_2_opt(ET, city_tour = solution)
+            if cand_makespan < sol_makespan:
+                solution  = copy.deepcopy(candidate)
+                count = 0
+            else:
+                count = count + 1                             
+        return solution 
+
+    # Function: Variable Neighborhood Search
+    def variable_neighborhood_search(self, ET, city_tour, max_attempts = 5, neighbourhood_size = 5, iterations = 50):
+        count = 0
+        solution = copy.deepcopy(city_tour)
+        best_solution = copy.deepcopy(city_tour)
+        #print("ET:", ET)
+        #print("Best Sol:", best_solution)
+        best_sol_makespan = self.get_fitness(ET, best_solution)
+        while (count < iterations):
+            for i in range(0, neighbourhood_size):
+                for j in range(0, neighbourhood_size):
+                    #solution, _ = stochastic_2_opt(ET, city_tour = best_solution)
+                    solution = self.local_search(ET, city_tour = solution, max_attempts = max_attempts, neighbourhood_size = neighbourhood_size )
+                    sol_makespan = self.get_fitness(ET,solution)
+                    if (sol_makespan < best_sol_makespan):
+                        best_solution = copy.deepcopy(solution) 
+                        best_sol_makespan = self.get_fitness(ET,best_solution)
+                        #print("-------------------")
+                        #print("solution makespan:", sol_makespan)
+                        #print("best solution makespan:", best_sol_makespan)
+                        break
+            count = count + 1
+            #print("Iteration = ", count)
+            #print(self.get_fitness(ET, best_solution))
+        return best_solution, best_sol_makespan
 
     def mutate_swap(self):
         for i in self.gen:
@@ -252,11 +346,14 @@ class EDA():
         self.create_first_gen()
 
         for i in range(self.numGen):
+            self.i = i
             print("GEN:",i)
             self.form_new_gen(self.to_matrix)
+            
         print("--- %s seconds ---" % (time.time() - start_time))
         self.exec_time = (time.time() - start_time)
-        
+        #with open('resultados/vns_analysis.json', 'w') as fout:
+        #    json.dump(self.vns_analysis, fout)
         self.save_to_csv()
         
         
