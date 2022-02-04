@@ -179,6 +179,8 @@ class EDA():
         self.v_func(self.gen)
 
         new_gen += Parallel(n_jobs=8)(delayed(self.paralel_gen)(i) for i in range(self.numInd - qtd_individuals))
+        #for i in range(self.numInd - qtd_individuals):
+        #    new_gen.append(Individual(self.ET, self.create_new_individual()))
         #print("New ind:",self.numInd - qtd_individuals)
         #print("Num ind:",self.numInd)
         self.gen = new_gen.copy()
@@ -196,7 +198,7 @@ class EDA():
         print(temp[-1].fitness)
         teste = temp[-1].fitness
 
-        if self.i == 99 or self.i == 199:
+        if self.i == 199:
             self.gen[-1].individual, self.gen[-1].fitness = self.variable_neighborhood_search(self.ET, self.gen[-1].individual)
             print("Worst individul makespan after vns:")
             print(self.gen[-1].fitness)
@@ -211,8 +213,8 @@ class EDA():
 
     def save_to_csv(self):
 
-        if path.exists('resultados/COM_VNS.csv'):
-            df_results = pd.read_csv('resultados/COM_VNS.csv', header=0, index_col=0)
+        if path.exists('resultados/COM_VNS200.csv'):
+            df_results = pd.read_csv('resultados/COM_VNS200.csv', header=0, index_col=0)
         else:
             columns = ['jobs','machines','numInd','numGen','makespan', 'to_matrix_percentage']
             df_results = pd.DataFrame(columns=columns)
@@ -230,7 +232,7 @@ class EDA():
              'instance': self.path,
              'mutation':self.mutation}, 
                         ignore_index=True)   
-        df_results.to_csv('resultados/COM_VNS.csv')     
+        df_results.to_csv('resultados/COM_VNS200.csv')     
         df_results = df_results.loc[:, ~df_results.columns.str.contains('^Unnamed')]
 
     def save_analysis_to_csv(self, teste):

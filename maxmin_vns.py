@@ -3,6 +3,10 @@ import numpy as np
 from utils import Utils
 import random
 import copy
+from joblib import Parallel, delayed
+import time
+from multiprocessing import Process, Queue
+
 
 def get_max_in_array(array):
         '''
@@ -101,14 +105,61 @@ def variable_neighborhood_search(ET, city_tour, max_attempts = 5, neighbourhood_
                 if (sol_makespan < best_sol_makespan):
                     best_solution = copy.deepcopy(solution) 
                     best_sol_makespan = get_fitness(ET,best_solution)
-                    print("-------------------")
-                    print("solution makespan:", sol_makespan)
-                    print("best solution makespan:", best_sol_makespan)
+                    #print("-------------------")
+                    #print("solution makespan:", sol_makespan)
+                    #print("best solution makespan:", best_sol_makespan)
                     break
         count = count + 1
-        print("Iteration = ", count)
-        print(get_fitness(ET, best_solution))
+        #print("Iteration = ", count)
+        #print(get_fitness(ET, best_solution))
     return best_solution, best_sol_makespan
+
+def getNeighbours(solution):
+    neighbours = []
+    for i in range(int(len(solution)/5)):
+        for j in range(i + 1, int(len(solution)/5)):
+            neighbour = solution.copy()
+            neighbour[i] = solution[j]
+            neighbour[j] = solution[i]
+            neighbours.append(neighbour)
+    print(f"len neighbours: {len(neighbours)}")
+    return neighbours
+
+def get_neighbour(solution, i, j):
+    neighbour = solution.copy()
+    neighbour[i] = solution[j]
+    neighbour[j] = solution[i]
+    return neighbour
+
+
+def getNeighboursParallel(solution):
+    neighbours = Parallel(n_jobs=4)(delayed(get_neighbour)(solution, i,j) for i in range(int(len(solution)/5)) for j in range(int(len(solution)/5)))
+    return neighbours
+
+def getBestNeighbour(ET, neighbours):
+    bestRouteLength = get_fitness(ET, neighbours[0])
+    bestNeighbour = neighbours[0]
+    for neighbour in neighbours:
+        currentRouteLength = get_fitness(ET, neighbour)
+        if currentRouteLength < bestRouteLength:
+            bestRouteLength = currentRouteLength
+            bestNeighbour = neighbour
+    return bestNeighbour, bestRouteLength
+
+def hillClimbing(ET, individual):
+    currentSolution = individual
+    currentRouteLength = get_fitness(ET,individual)
+    neighbours = getNeighbours(currentSolution)
+    bestNeighbour, bestNeighbourRouteLength = getBestNeighbour(ET, neighbours)
+
+    while bestNeighbourRouteLength < currentRouteLength:
+        currentSolution = bestNeighbour
+        currentRouteLength = bestNeighbourRouteLength
+        neighbours = getNeighbours(currentSolution)
+        bestNeighbour, bestNeighbourRouteLength = getBestNeighbour(ET, neighbours)
+
+    return currentSolution, currentRouteLength
+    
 
 jobs = 512 
 resources = 16
@@ -117,10 +168,13 @@ u = Utils()
 
 ET, CT, maquinas = u.initialize('512x16/u_c_lolo.0', jobs, resources)
 
-
-res, individuos = u.maxmin2(ET, CT, maquinas)
+res, individuo = u.maxmin2(ET, CT, maquinas)
 res.sort()
 print("Maquinas: ",res[-1])
 #print("Individuo: ",individuos)
-
-print(variable_neighborhood_search(ET, individuos))
+#print(variable_neighborhood_search(ET, individuo))
+start = time.time()
+print(hillClimbing(ET, individuo))
+print("Maquinas: ",res[-1])
+end = time.time()
+print(f"elapsed time: {end - start}")
