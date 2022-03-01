@@ -109,22 +109,22 @@ class EDA():
         ET, CT, maquinas = u.initialize('512x16/'+self.path, self.jobs, self.machines)
 
         res, individuos = u.maxmin2(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'maxmin'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'maxmin'))
 
         res, individuos = u.minmin(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'minmin'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'minmin'))
 
         res, individuos = u.mct2(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'mct'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'mct'))
 
         res, individuos = u.met(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'met'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'met'))
 
         res, individuos = u.olb(ET, CT, maquinas)
-        #self.gen.append(Individual(self.ET.copy(), individuos, 'olb'))
+        self.gen.append(Individual(self.ET.copy(), individuos, 'olb'))
         
-        #for _ in range(self.numInd):
-        #    self.gen.append(Individual(self.ET.copy()))
+        for _ in range(self.numInd):
+            self.gen.append(Individual(self.ET.copy()))
 
         #self.save_to_json(100)
 
@@ -133,11 +133,11 @@ class EDA():
         #população gerada por força bruta
         
         _path = self.path.split('.')[0]
-        #u_c_pop = json.load(open(f'population_map-{_path}.txt.json'))
-        #print(f"--------population_map-{_path}.txt.json---------")
+        u_c_pop = json.load(open(f'population_map-{_path}.txt.json'))
+        print(f"--------population_map-{_path}.txt.json---------")
 
-        #for i in range(len(u_c_pop)):
-        #    self.gen.append(Individual(self.ET.copy(), u_c_pop[str(i)]))
+        for i in range(len(u_c_pop)):
+            self.gen.append(Individual(self.ET.copy(), u_c_pop[str(i)]))
         
         #população gerada atraves da populacao controle
         for i in range(len(pop)):
@@ -197,13 +197,13 @@ class EDA():
         print("Worst individul makespan before vns:")
         print(temp[-1].fitness)
         teste = temp[-1].fitness
-        '''
-        if self.i == 199:
+        
+        if self.i == self.numGen - 1:
             self.gen[-1].individual, self.gen[-1].fitness = self.variable_neighborhood_search(self.ET, self.gen[-1].individual)
             print("Worst individul makespan after vns:")
             print(self.gen[-1].fitness)
             self.save_analysis_to_csv(teste)
-        '''
+        
         if self.best_makespan is None:
             self.best_makespan = self.gen[-1].fitness
         else:
@@ -265,7 +265,7 @@ class EDA():
             p = random.randint(1,100)
             if p <= self.mutation and i.heuristic is None:
                 pos = random.randint(0,len(self.gen[0].individual)-1)
-                i.individual[pos] = random.randint(0, self.machines - 1)
+                i.individual[pos] = `random.randint(0, self.machines - 1)`
                 i.fitness = i.get_fitness()
 
     def get_fitness(self, ET, individual):
